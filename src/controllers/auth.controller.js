@@ -227,27 +227,34 @@ async function getMe(req,res) {
 
 async function forgotPassword(req,res) {
 
+          try {
     const { email } = req.body;
-     const user = await userModel.findOne({ email });
-if (!user) return res.status(404).json({ message: "Email not found" });
+    const user = await userModel.findOne({ email });
+    if (!user) return res.status(404).json({ message: "Email not found" });
 
-        const token = jwt.sign(
-            {email:email},
-            process.env.JWT_SECRET,
-            {expiresIn:"1h"}
-        )
+    const token = jwt.sign(
+      { email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-        await sendMail({
-            to:email,
-            subject:"CINEVERSE Password Reset",
-            html:`<h1>Password Reset Request</h1>
+    await sendMail({
+      to: email,
+      subject: "CINEVERSE Password Reset",
+      html: `<h1>Password Reset Request</h1>
 <p>Hi ${user.username},</p>
 <p>We received a request to reset your password. Click the link below to set a new password:</p>
 <a href="https://cineverse-of8b.onrender.com/reset-password?token=${token}">Reset Password</a>
 <p>This link will expire in 1 hour. If you did not request a password reset, please ignore this email.</p>
 <p>Best regards,<br/>The Cineverse Team</p>`
-        })
+    });
 
+    res.json({ success: true, message: "Reset email sent!" }); // ← add this!
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
 
 
 
