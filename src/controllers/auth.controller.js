@@ -3,6 +3,7 @@ import userModel from "../models/user.model.js";
 import { sendMail  } from "../services/mail.service.js";
 import jwt from "jsonwebtoken";
 import { addTokenToBlacklist } from "../services/redis.service.js";
+import redis from "../services/redis.service.js";
 
 
 async function registerController(req,res) {
@@ -238,6 +239,8 @@ async function forgotPassword(req,res) {
       { expiresIn: "1h" }
     );
 
+    redis.setex(`reset_${token}`, 3600, email); 
+
     await sendMail({
       to: email,
       subject: "CINEVERSE Password Reset",
@@ -261,7 +264,15 @@ async function forgotPassword(req,res) {
 }
 
 async function resetPasswordController(req, res) {
+
+
   const { token, newPassword } = req.body;
+
+  const email = await redis.get(`reset_${token}`);
+
+  if (!email) {
+    return res.status(400).json({ message: "Invalid or expired token" });
+  }
   
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const user = await userModel.findOne({ email: decoded.email });
