@@ -1,24 +1,23 @@
-import { Resend } from "resend";
+import * as Brevo from "@getbrevo/brevo";
 import dotenv from "dotenv";
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const client = new Brevo.TransactionalEmailsApi();
+client.authentications["apiKey"].apiKey = process.env.BREVO_API_KEY;
 
 export async function sendMail({ to, subject, html }) {
   try {
-    const { data, error } = await resend.emails.send({
-      from: "Cineverse <onboarding@resend.dev>",
-      to,
-      subject,
-      html,
-    });
+    const email = new Brevo.SendSmtpEmail();
+    email.to = [{ email: to }];
+    email.subject = subject;
+    email.htmlContent = html;
+    email.sender = {
+      name: "Cineverse",
+      email: process.env.BREVO_SENDER,
+    };
 
-    if (error) {
-      console.error("Email error:", error);
-      throw error;
-    }
-
-    console.log("Email sent:", data.id);
+    const data = await client.sendTransacEmail(email);
+    console.log("Email sent:", data.body.messageId);
     return data;
   } catch (error) {
     console.error("Failed to send email:", error);
