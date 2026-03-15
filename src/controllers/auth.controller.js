@@ -270,7 +270,7 @@ async function resetPasswordController(req, res) {
 
   const email = await redis.get(`reset_${token}`);
 
-  if (!email) {
+  if (email) {
     return res.status(400).json({ message: "Invalid or expired token" });
   }
   
