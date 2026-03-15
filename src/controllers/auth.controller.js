@@ -264,28 +264,34 @@ async function forgotPassword(req,res) {
 }
 
 async function resetPasswordController(req, res) {
+  try {
+    const { token, newPassword } = req.body;
 
-
-  const { token, newPassword } = req.body;
-
-  const email = await redis.get(`reset_${token}`);
-
-  if (email) {
-    return res.status(400).json({ message: "Invalid or expired token" });
-  }
-  
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const user = await userModel.findOne({ email: decoded.email });
-  
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
+    // Check token in Redis
+    const email = await redis.get(`reset_${token}`);
+    if (!email) { 
+      return res.status(400).json({ message: "Invalid or expired token" });
     }
-  
-    user.password = newPassword;
 
-  await user.save();
-  
-  res.json({ success: true, message: "Password reset successful" });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findOne({ email: decoded.email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    // ← Delete token — one time use!
+    await redis.del(`reset_${token}`);
+
+    res.json({ success: true, message: "Password reset successful" });
+
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
 }
 
 async function logoutController(req, res) {
