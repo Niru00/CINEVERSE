@@ -43,7 +43,7 @@ async function registerController(req,res) {
         html:`<h1>Welcome to Cineverse, ${username}!</h1>
 <p>Thank you for registering with us. We're excited to have you on board!</p>
 <p>Please verify your email address by clicking the link below:</p> 
-<a href="http://localhost:5000/api/auth/verify-email?token=${token}">Verify Email</a>
+<a href="https://cineverse-of8b.onrender.com/api/auth/verify-email?token=${token}">Verify Email</a>
 <p>If you did not create an account, please ignore this email.</p>
 <p>Best regards,<br/>The Cineverse Team</p>`
 
@@ -95,7 +95,7 @@ async function loginController(req,res) {
     html: `<h1>Welcome to Cineverse, ${user.username}!</h1>
 <p>Thank you for registering with us. We're excited to have you on board!</p>
 <p>Please verify your email address by clicking the link below:</p>
-<a href="http://localhost:5000/api/auth/verify-email?token=${token}">Verify Email</a>
+<a href="https://cineverse-of8b.onrender.com/api/auth/verify-email?token=${token}">Verify Email</a>
 <p>If you did not create an account, please ignore this email.</p>
 <p>Best regards,<br/>The Cineverse Team</p>`
   });
@@ -165,7 +165,7 @@ async function emailResendController(req,res) {
         html:`<h1>Welcome to Cineverse, ${user.username}!</h1>
 <p>Thank you for registering with us. We're excited to have you on board!</p>
 <p>Please verify your email address by clicking the link below:</p>
-<a href="http://localhost:5000/api/auth/verify-email?token=${token}">Verify Email</a>
+<a href="https://cineverse-of8b.onrender.com/api/auth/verify-email?token=${token}">Verify Email</a>
 <p>If you did not create an account, please ignore this email.</p>
 <p>Best regards,<br/>The Cineverse Team</p>`
 
@@ -243,7 +243,7 @@ if (!user) return res.status(404).json({ message: "Email not found" });
             html:`<h1>Password Reset Request</h1>
 <p>Hi ${user.username},</p>
 <p>We received a request to reset your password. Click the link below to set a new password:</p>
-<a href="http://localhost:5173/reset-password?token=${token}">Reset Password</a>
+<a href="https://cineverse-of8b.onrender.com/reset-password?token=${token}">Reset Password</a>
 <p>This link will expire in 1 hour. If you did not request a password reset, please ignore this email.</p>
 <p>Best regards,<br/>The Cineverse Team</p>`
         })
