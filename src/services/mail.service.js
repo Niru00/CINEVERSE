@@ -21,7 +21,7 @@ transporter.verify((error, success) => {
 
 export async function sendMail({to,subject,html}) {
     const mailOptions ={
-        from:process.env.GOOGLE_USER,
+        from:process.env.EMAIL,
         to,
         subject,
         html
